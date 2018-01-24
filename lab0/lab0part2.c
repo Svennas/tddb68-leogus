@@ -7,13 +7,14 @@ struct list_item {
 
 void append(struct list_item *first, int x) {
    /* puts x at the end of the list */
+  typedef struct list_item Node;
+  Node *next_item = (Node*)malloc(sizeof(Node));
+  next_item->value = x;
+  next_item->next = NULL;
   while (first->next != NULL) {
     first = first->next;
   }
-  struct list_item *last;
-  last->value = x;
-  last->next = NULL;
-  first->next = last;
+  first->next = next_item;
 }
 
 void prepend(struct list_item *first, int x) {
