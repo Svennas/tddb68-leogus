@@ -84,4 +84,5 @@ int main(int argc, char ** argv) {
    clear(&root);
    append(&root, 9);
    print(&root);
+   clear(&root);
 }
