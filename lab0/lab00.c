@@ -5,7 +5,10 @@ int main(int argc, char ** argv)
   char str[] = "sihtgubed";
   char *stri = &str[8];
   char *buf[9];
+  //char **buf;
+  //buf = malloc(9 * sizeof(char*));
   char **bufi, **bufend;
+  //bufi[0] == *bufi;
   bufi = buf;
   bufend = &buf[9];
 

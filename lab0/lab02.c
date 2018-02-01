@@ -53,17 +53,17 @@ void input_sorted(struct list_item *first, int x) {
 
 /* free everything dynamically allocated */
 void clear(struct list_item *first) {
-  struct list_item *root;
-  root = first;
-  root = root->next;
+  struct list_item *new_item;
+  new_item = first;
+  new_item = new_item->next;
 
   struct list_item *temp;
-  temp = root;
+  temp = new_item;
 
-  while (root != NULL) {
-    temp = root->next;
-    free(root);
-    root = temp;
+  while (new_item != NULL) {
+    temp = new_item->next;
+    free(new_item);
+    new_item = temp;
   }
 
   first->next = NULL;
