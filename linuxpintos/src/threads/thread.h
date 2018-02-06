@@ -89,6 +89,11 @@ struct thread
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
 
+    #ifdef USERPROG
+    int fd[130];                         /*File descriptor.*/
+    int fd_int = 1;
+    #endif
+
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
