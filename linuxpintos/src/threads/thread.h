@@ -90,8 +90,8 @@ struct thread
     int priority;                       /* Priority. */
 
     #ifdef USERPROG
-    int fd_list[130];                         /*File descriptor.*/
-    int fd_int = 1;
+    struct file fd_list[130];           /*File list.*/
+    int fd_int = 1;                     /*File descriptor int.*/
     #endif
 
     /* Shared between thread.c and synch.c. */
