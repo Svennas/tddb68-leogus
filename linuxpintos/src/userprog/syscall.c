@@ -15,7 +15,7 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED)
 {
-  printf ("system call!\n");
+  printf ("syscall_handler system call!\n");
   thread_exit ();
 }
 
@@ -77,6 +77,7 @@ int read (int fd, void *buffer, unsigned size) {
 }
 
 int write (int fd, const void *buffer, unsigned size) {
+  printf("Welcome to write!");
   struct thread *t = thread_current();
   struct file *f = t->fd_list[fd];
 

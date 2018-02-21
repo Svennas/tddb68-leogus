@@ -53,6 +53,7 @@
 
 int main(void)
 {
+  printf("Welcome to main!");
   char *dummyprint = "Hello, world!\n";
   char *testdata = "sample file content";
   bool created;
