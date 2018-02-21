@@ -35,9 +35,9 @@ int open(const char *file) {
   else {
     struct thread *t = thread_current();
 
-    if (t->fd_int =< 129) {
+    if (t->fd_int <= 129) {
       t->fd_int++;
-      t->fd_list[fd_int] = file_open(file);
+      t->fd_list[t->fd_int] = file_open(file);
       return t->fd_int;
     }
   }
@@ -50,8 +50,8 @@ void close (int fd) {
 }
 
 int read (int fd, void *buffer, unsigned size) {
-  struct thread t* = thread_current();
-  struct file f* = t->fd_list[fd];
+  struct thread *t = thread_current();
+  struct file *f = t->fd_list[fd];
 
   if (file_open(f) == NULL) {
     return -1;
@@ -63,13 +63,12 @@ int read (int fd, void *buffer, unsigned size) {
       input_getc(buffer, size);
     }
     else {
-      fgets(buffer, size, f);
-      puts(buffer);
+      file_read(f, buffer, size);
     }
 
     //determines return value
     if (size > sizeof(f)) {
-      return sizeof(file);
+      return sizeof(f);
     }
     else {
       return size;
@@ -78,8 +77,8 @@ int read (int fd, void *buffer, unsigned size) {
 }
 
 int write (int fd, const void *buffer, unsigned size) {
-  struct thread t* = thread_current();
-  struct file f* = t->fd_list[fd];
+  struct thread *t = thread_current();
+  struct file *f = t->fd_list[fd];
 
   if (file_open(f) == NULL) {
     return -1;
@@ -91,12 +90,12 @@ int write (int fd, const void *buffer, unsigned size) {
       putbuf(buffer, size);
     }
     else {
-      fputs(buffer, f);
+      file_write(f, buffer, size);
     }
 
     //determines return value
     if (size > sizeof(f)) {
-      return sizeof(file);
+      return sizeof(f);
     }
     else {
       return size;

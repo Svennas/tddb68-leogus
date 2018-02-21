@@ -83,15 +83,16 @@ typedef int tid_t;
 struct thread
   {
     /* Owned by thread.c. */
-    tid_t tid;                          /* Thread identifier. */
-    enum thread_status status;          /* Thread state. */
-    char name[16];                      /* Name (for debugging purposes). */
+    tid_t tid;                          /* Thread i initial_sizer debugging purposes). */
+    enum thread_status status;
+    char name[16];
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
 
     #ifdef USERPROG
-    struct file fd_list[130];           /*File list.*/
-    int fd_int = 1;                     /*File descriptor int.*/
+    struct file *fd_list[130];           /*File list.*/
+    int fd_int;                     /*File descriptor int.*/
+
     #endif
 
     /* Shared between thread.c and synch.c. */
