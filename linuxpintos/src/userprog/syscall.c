@@ -3,6 +3,8 @@
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "filesys/filesys.h"
+#include "filesys/file.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -13,9 +15,36 @@ syscall_init (void)
 }
 
 static void
-syscall_handler (struct intr_frame *f UNUSED)
+syscall_handler (struct intr_frame *f)
 {
-  printf ("syscall_handler system call!\n");
+  printf ("system call!\n");
+
+  switch (*(int*)(f->esp)) {
+    case SYS_HALT:
+      halt();
+      break;
+    case SYS_CREATE:
+      create((char*)(f->esp+4), *(unsigned*)(f->esp+4*2));
+      break;
+    case SYS_OPEN:
+      open((char*)(f->esp+4));
+      break;
+    case SYS_CLOSE:
+      close(*(char*)(f->esp+4));
+      break;
+    case SYS_READ:
+      read(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
+      break;
+    case SYS_WRITE:
+      write(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
+      break;
+    case SYS_EXIT:
+      exit(*(char*)(f->esp+4));
+      break;
+    default:
+      printf("System call not accounted for.");
+  }
+
   thread_exit ();
 }
 

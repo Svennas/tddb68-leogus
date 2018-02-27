@@ -53,7 +53,7 @@
 
 int main(void)
 {
-  printf("Welcome to main!");
+  printf("Welcome to the main!");
   char *dummyprint = "Hello, world!\n";
   char *testdata = "sample file content";
   bool created;
@@ -202,7 +202,7 @@ int main(void)
     ERROR("Failed to read %d characters from console, read %d.\n", READ_CONSOLE_COUNT, bytes_read);
   }
 
-  SUCCESS("TEST 6: Passed\n");
+  SUCCESS("TEST 6: Passed\n");*/
 
 
 
@@ -210,5 +210,5 @@ int main(void)
   TITLE("If it does, it means that all tests were successful.\n");
   exit(0);
 
-  ERROR("ERR: Thread did not exit.\n");*/
+  ERROR("ERR: Thread did not exit.\n");
 }
