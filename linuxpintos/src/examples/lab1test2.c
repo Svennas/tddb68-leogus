@@ -29,7 +29,6 @@
 #include <syscall.h>
 #include <stdarg.h>
 
-//we added this
 #include <stdbool.h>
 #define STDIN_FILENO 0
 #define STDOUT_FILENO 1
@@ -53,7 +52,7 @@
 
 int main(void)
 {
-  printf("Welcome to the main!");
+  printf("What\n");
   char *dummyprint = "Hello, world!\n";
   char *testdata = "sample file content";
   bool created;

@@ -3,6 +3,7 @@
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "threads/init.h"
 #include "filesys/filesys.h"
 #include "filesys/file.h"
 
@@ -19,15 +20,16 @@ syscall_handler (struct intr_frame *f)
 {
   printf ("system call!\n");
 
+  /*determines syscall and arguments with intr_frame's esp field and calls it*/
   switch (*(int*)(f->esp)) {
     case SYS_HALT:
       halt();
       break;
     case SYS_CREATE:
-      create((char*)(f->esp+4), *(unsigned*)(f->esp+4*2));
+      f->eax = create((char*)(f->esp+4), *(unsigned*)(f->esp+4*2));
       break;
     case SYS_OPEN:
-      open((char*)(f->esp+4));
+      f->eax = open((char*)(f->esp+4));
       break;
     case SYS_CLOSE:
       close(*(char*)(f->esp+4));
@@ -36,16 +38,16 @@ syscall_handler (struct intr_frame *f)
       read(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
       break;
     case SYS_WRITE:
-      write(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
+      f->eax = write(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
       break;
     case SYS_EXIT:
       exit(*(char*)(f->esp+4));
       break;
     default:
-      printf("System call not accounted for.");
+      printf("System call not accounted for.\n");
   }
 
-  thread_exit ();
+  thread_exit();
 }
 
 void halt(void) {
@@ -69,6 +71,8 @@ int open(const char *file) {
       t->fd_list[t->fd_int] = file_open(file);
       return t->fd_int;
     }
+    printf("%s\n", "Amount of opened files simultaneously permitted exceeded.\n");
+    return -1;
   }
 }
 
@@ -82,54 +86,56 @@ int read (int fd, void *buffer, unsigned size) {
   struct thread *t = thread_current();
   struct file *f = t->fd_list[fd];
 
-  if (file_open(f) == NULL) {
-    return -1;
+  /*different function(s) depending if fd is 0 or not*/
+  if (fd == 0) {
+    input_getc(buffer, size);
+    return size;
+  }
+  else {
+    if (file_open(f) == NULL) {
+      return -1;
+    }
+
+    file_read(f, buffer, size);
   }
 
+  /*determines return value (when file can be opened and fd != 0)*/
+  if (size > sizeof(f)) {
+    return sizeof(f);
+  }
   else {
-    //different function(s) depending if fd is 0 or not
-    if (fd == 0) {
-      input_getc(buffer, size);
-    }
-    else {
-      file_read(f, buffer, size);
-    }
-
-    //determines return value
-    if (size > sizeof(f)) {
-      return sizeof(f);
-    }
-    else {
-      return size;
-    }
+    return size;
   }
 }
 
 int write (int fd, const void *buffer, unsigned size) {
-  printf("Welcome to write!");
+  printf("Welcome to write!\n");
   struct thread *t = thread_current();
   struct file *f = t->fd_list[fd];
+  printf("fd: %d\n", fd);
+  printf("size: %u\n", size);
 
-  if (file_open(f) == NULL) {
-    return -1;
+  /*different function depending if fd is 1 or not*/
+  if (fd == 1) {
+    putbuf(buffer, size);
+    return size;
+  }
+  else {
+    if (file_open(f) == NULL) {
+      return -1;
+    }
+
+    file_write(f, buffer, size);
   }
 
+  /*determines return value (when file can be opened and fd != 1)*/
+  if (size > sizeof(f)) {
+    printf("bloop\n");
+    return sizeof(f);
+  }
   else {
-    //different function depending if fd is 1 or not
-    if (fd == 1) {
-      putbuf(buffer, size);
-    }
-    else {
-      file_write(f, buffer, size);
-    }
-
-    //determines return value
-    if (size > sizeof(f)) {
-      return sizeof(f);
-    }
-    else {
-      return size;
-    }
+    printf("blarp\n");
+    return size;
   }
 }
 
