@@ -52,13 +52,13 @@
 
 int main(void)
 {
-  printf("What\n");
+  printf("abcdefghi\nABCDEFGHI");
   char *dummyprint = "Hello, world!\n";
   char *testdata = "sample file content";
   bool created;
   int fd;
   int bytes_written;
-  int bytes_read;
+  int bytes_read = 0;
   char sbuf[READ_SIZE];
 
 
@@ -76,7 +76,7 @@ int main(void)
 
 
 
-  /*TITLE("TEST 2: Creating file\n");
+  TITLE("TEST 2: Creating file\n");
   created = create("test0", strlen(testdata));
   if (!created)
   {
@@ -118,8 +118,8 @@ int main(void)
     {
       if (file_descriptors[j] == fd)
       {
-	printf("\n");
-        ERROR("Opened file with reoccuring file descriptor.\n");
+	       printf("\n");
+         ERROR("Opened file with reoccuring file descriptor.\n");
       }
     }
 
@@ -133,7 +133,11 @@ int main(void)
   for (i = 0; i < FD_TEST_COUNT; ++i)
   {
     close(file_descriptors[i]);
+    printf("bytes_read before: %d\n", bytes_read);
     bytes_read = read(file_descriptors[i], sbuf, READ_SIZE);
+    printf("bytes_read after: %d\n", bytes_read);
+    int aaaa = read(file_descriptors[i], sbuf, READ_SIZE);
+    printf("bytes_read after2: %d\n", aaaa);
     if (bytes_read != -1)
     {
       printf("\n");
@@ -201,7 +205,7 @@ int main(void)
     ERROR("Failed to read %d characters from console, read %d.\n", READ_CONSOLE_COUNT, bytes_read);
   }
 
-  SUCCESS("TEST 6: Passed\n");*/
+  SUCCESS("TEST 6: Passed\n");
 
 
 

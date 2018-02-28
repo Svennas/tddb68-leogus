@@ -91,7 +91,7 @@ struct thread
 
     #ifdef USERPROG
     struct file *fd_list[130];           /*File list.*/
-    int fd_int;                     /*File descriptor int.*/
+    int fd_int;                          /*File descriptor int.*/
 
     #endif
 

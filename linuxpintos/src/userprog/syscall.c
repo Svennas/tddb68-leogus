@@ -18,48 +18,50 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f)
 {
-  printf ("system call!\n");
-
   /*determines syscall and arguments with intr_frame's esp field and calls it*/
   switch (*(int*)(f->esp)) {
     case SYS_HALT:
       halt();
       break;
     case SYS_CREATE:
-      f->eax = create((char*)(f->esp+4), *(unsigned*)(f->esp+4*2));
+      f->eax = create(*(char**)(f->esp+4), *(unsigned*)(f->esp+4*2));
       break;
     case SYS_OPEN:
-      f->eax = open((char*)(f->esp+4));
+      f->eax = open(*(char**)(f->esp+4));
       break;
     case SYS_CLOSE:
-      close(*(char*)(f->esp+4));
+      close(*(int*)(f->esp+4));
       break;
     case SYS_READ:
-      read(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
+      read(*(int*)(f->esp+4), *(char**)(f->esp+4*2), *(unsigned*)(f->esp+4*3));
       break;
     case SYS_WRITE:
-      f->eax = write(*(char*)(f->esp+4), (char*)(f->esp+4*2), *(char*)(f->esp+4*3));
+      //changed typecast (char*) to *(char**) in second argument to make it work (either here or in write function before/during passing it to putbuf)
+      f->eax = write(*(int*)(f->esp+4), *(char**)(f->esp+4*2), *(unsigned*)(f->esp+4*3));
       break;
     case SYS_EXIT:
-      exit(*(char*)(f->esp+4));
+      exit(*(int*)(f->esp+4));
       break;
     default:
       printf("System call not accounted for.\n");
   }
 
-  thread_exit();
+  //thread_exit();
 }
 
 void halt(void) {
+  printf("Welcome to halt!\n");
   power_off();
 }
 
 bool create(const char *file, unsigned initial_size) {
+  printf("Welcome to create!\n");
   return filesys_create(file, initial_size);
 }
 
 int open(const char *file) {
-  if (file_open(file) == NULL) {
+  printf("Welcome to open!\n");
+  if (file == NULL) {
     return -1;
   }
 
@@ -67,8 +69,9 @@ int open(const char *file) {
     struct thread *t = thread_current();
 
     if (t->fd_int <= 129) {
+      printf("FD INT PRINT %d\n", t->fd_int);
       t->fd_int++;
-      t->fd_list[t->fd_int] = file_open(file);
+      t->fd_list[t->fd_int] = filesys_open(file);
       return t->fd_int;
     }
     printf("%s\n", "Amount of opened files simultaneously permitted exceeded.\n");
@@ -77,12 +80,15 @@ int open(const char *file) {
 }
 
 void close (int fd) {
+  printf("Welcome to close!\n");
   struct thread *t = thread_current();
   file_close(t->fd_list[fd]);
   t->fd_list[fd] = NULL;
+  printf("Escaping close!\n");
 }
 
 int read (int fd, void *buffer, unsigned size) {
+  printf("Welcome to read!\n");
   struct thread *t = thread_current();
   struct file *f = t->fd_list[fd];
 
@@ -92,10 +98,11 @@ int read (int fd, void *buffer, unsigned size) {
     return size;
   }
   else {
-    if (file_open(f) == NULL) {
+    printf("ELSEEEEE\n");
+    if (f == NULL) {
+      printf("ITS NUULLLLLLLLLLL\n");
       return -1;
     }
-
     file_read(f, buffer, size);
   }
 
@@ -112,8 +119,6 @@ int write (int fd, const void *buffer, unsigned size) {
   printf("Welcome to write!\n");
   struct thread *t = thread_current();
   struct file *f = t->fd_list[fd];
-  printf("fd: %d\n", fd);
-  printf("size: %u\n", size);
 
   /*different function depending if fd is 1 or not*/
   if (fd == 1) {
@@ -121,24 +126,22 @@ int write (int fd, const void *buffer, unsigned size) {
     return size;
   }
   else {
-    if (file_open(f) == NULL) {
+    if (f == NULL) {
       return -1;
     }
-
     file_write(f, buffer, size);
   }
 
   /*determines return value (when file can be opened and fd != 1)*/
   if (size > sizeof(f)) {
-    printf("bloop\n");
     return sizeof(f);
   }
   else {
-    printf("blarp\n");
     return size;
   }
 }
 
 void exit (int status) {
+  printf("Welcome to exit!\n");
   thread_exit();
 }
